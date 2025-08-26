@@ -27,6 +27,28 @@ collatzList _ = error "not intended input"
 generateCollatzList :: Integer -> [Integer]
 generateCollatzList a = snd . collatzList $ (False, [a])
 
+-- Convert collatzList to vector chain
+
+-- convert list, based on if its even or odd
+evens :: [Integer] -> [Bool]
+evens = map even
+
+nextPoint :: (Float, Float) -> (Float, Float) -> Bool -> (Float, Float)
+nextPoint (x1, y1) (x2, y2) b
+  | b = (cos theta + x2, sin theta + y2)
+  | otherwise = (cos theta' + x2, sin theta' + y2)
+  where theta = atan2 (y2 - y1) (x2 - x1) + (pi/24)
+        theta' = atan2 (y2 - y1) (x2 - x1) - (pi/24)
+
+collatzPath :: Integer -> [Point]
+collatzPath a = makePath (0,0) (cos pi/6, sin pi/6) $ evens $ generateCollatzList a
+  where makePath :: (Float, Float) -> (Float, Float) -> [Bool] -> [(Float, Float)]
+        makePath (_, _) (_, _) [] = []
+        makePath p1 p2 (x:xs) = nextPoint p1 p2 x : makePath p2 (nextPoint p1 p2 x) xs
+
+
+-- Graphics Generation
+
 listToCoords :: Integer -> [Point]
 listToCoords a = listify 0 $ generateCollatzList a
   where
@@ -35,8 +57,6 @@ listToCoords a = listify 0 $ generateCollatzList a
     listify a (x:xs) =
       (fromIntegral a, fromIntegral x):listify (a + 10) xs
 
-
--- Graphics Generation
 drawPoints :: [(Float, Float)] -> Picture
 drawPoints pts = Pictures $ map drawDot pts
   where
@@ -48,5 +68,5 @@ main = do
     (InWindow "test" (40,40) (40,40))
     (makeColorI 255 255 255 255)
     (Pictures $
-      [line $ listToCoords x | x <- [1..1000]]
+      [line $ collatzPath x | x <- [1..1000]]
     )
