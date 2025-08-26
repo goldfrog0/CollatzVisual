@@ -1,5 +1,9 @@
 module Main where
 
+import Graphics.Gloss.Data.Picture
+import Graphics.Gloss
+import System.Random
+
 -- Function is safe if Collatz is true
 collatzCheck :: Integer -> Bool
 collatzCheck 1 = True
@@ -23,7 +27,26 @@ collatzList _ = error "not intended input"
 generateCollatzList :: Integer -> [Integer]
 generateCollatzList a = snd . collatzList $ (False, [a])
 
+listToCoords :: Integer -> [Point]
+listToCoords a = listify 0 $ generateCollatzList a
+  where
+    listify :: Integer -> [Integer] -> [Point]
+    listify _ [] = []
+    listify a (x:xs) =
+      (fromIntegral a, fromIntegral x):listify (a + 10) xs
 
+
+-- Graphics Generation
+drawPoints :: [(Float, Float)] -> Picture
+drawPoints pts = Pictures $ map drawDot pts
+  where
+    drawDot (x, y) = translate x y $ color red $ circleSolid 4
 
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = do
+  display
+    (InWindow "test" (40,40) (40,40))
+    (makeColorI 255 255 255 255)
+    (Pictures $
+      [line $ listToCoords x | x <- [1..1000]]
+    )

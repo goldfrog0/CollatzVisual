@@ -1,0 +1,7 @@
+cradle:
+  multi:
+    - path: "app/Main.hs"
+      config:
+        cradle:
+          cabal:
+            component: exe:CollatzVisual
