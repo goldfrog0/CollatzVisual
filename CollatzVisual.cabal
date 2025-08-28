@@ -70,7 +70,8 @@ executable CollatzVisual
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.18.3.0,
                       gloss,
-                      random
+                      random,
+                      easyplot
 
     -- Directories containing source files.
     hs-source-dirs:   app

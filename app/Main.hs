@@ -2,7 +2,9 @@ module Main where
 
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss
+import Graphics.EasyPlot
 import System.Random
+
 
 -- Function is safe if Collatz is true
 collatzCheck :: Integer -> Bool
@@ -61,6 +63,13 @@ drawPoints :: [(Float, Float)] -> Picture
 drawPoints pts = Pictures $ map drawDot pts
   where
     drawDot (x, y) = translate x y $ color red $ circleSolid 4
+
+
+test :: IO Bool
+test = do plot' [Interactive] X11 $ [Data2D [Title "Test Plot", Style Lines] [] $ collatzPath a | a <- [1..2000]]
+
+test1 :: IO Bool
+test1 = plot X11 $ [Data2D [Title "Sample Data"] [] $ collatzPath a | a <- [1..100]]
 
 main :: IO ()
 main = do
